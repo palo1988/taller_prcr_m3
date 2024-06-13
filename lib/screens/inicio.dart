@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:taller_app/screens/catalogo.dart';
@@ -36,7 +37,7 @@ class _CuerpoState extends State<Cuerpo> {
   int indice = 0;
   @override
   Widget build(BuildContext context) {
-    List<Widget> screens = [Body(context), const Registro(), const Pantalla2()];
+    List<Widget> screens = [Body(context), const Registro()];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -54,8 +55,6 @@ class _CuerpoState extends State<Cuerpo> {
           BottomNavigationBarItem(icon: Icon(Icons.login), label: "Login"),
           BottomNavigationBarItem(
               icon: Icon(Icons.app_registration), label: "Registro"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.library_books), label: "Catalogo"),
         ],
       ),
     );
@@ -78,16 +77,20 @@ Widget Body(context) {
         ),
         Usuario(),
         Password(),
-        Boton()
+        Boton(context)
       ],
     ),
   );
 }
 
+final TextEditingController _correo = TextEditingController();
+final TextEditingController _contrasenia = TextEditingController();
+
 Widget Usuario() {
   return (Container(
       padding: const EdgeInsets.all(10),
       child: TextField(
+        controller: _correo,
         style: TextStyle(backgroundColor: Color.fromARGB(0, 137, 137, 240)),
         decoration: InputDecoration(
             hintText: "ingresar usuario",
@@ -100,6 +103,7 @@ Widget Password() {
   return (Container(
     padding: const EdgeInsets.all(10),
     child: TextField(
+      controller: _contrasenia,
       obscureText: true,
       decoration: const InputDecoration(
           hintText: "ingresar password",
@@ -110,27 +114,33 @@ Widget Password() {
   ));
 }
 
-Widget Boton() {
+Widget Boton(context) {
   return (Container(
     child: ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        //funcion login
+        login(context);
+      },
       child: Text("LOGIN"),
       style: ButtonStyle(),
     ),
   ));
 }
 
-// ignore: non_constant_identifier_names
-Widget Boton1(context) {
-  return (FilledButton(
-      onPressed: () {
-        irTab(context);
-      },
-      child: const Text("Ir a la ventana Principal")));
-}
+Future<void> login(context) async {
+  try {
+    // ignore: unused_local_variable
+    final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _correo.text, password: _contrasenia.text);
 
-//funcion para navegar
-void irTab(context) {
-  Navigator.push(
-      context, MaterialPageRoute(builder: (context) => const TallerApp()));
+///////////////navegacion///////////////
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => Pantalla2()));
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found') {
+      print('No user found for that email.');
+    } else if (e.code == 'wrong-password') {
+      print('Wrong password provided for that user.');
+    }
+  }
 }

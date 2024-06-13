@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taller_app/screens/IngresarPelicula.dart';
 
 void main() {
   runApp(Pantalla2());
@@ -42,11 +43,23 @@ Widget Cuerpo(context) {
             fit: BoxFit.cover)),
     child: Center(
       child: Column(
-        children: <Widget>[
-          BotonCatalogo(context),
-        ],
+        children: <Widget>[BotonCatalogo(context), BotonIngresarPeli(context)],
       ),
     ),
+  );
+}
+
+Widget BotonIngresarPeli(context) {
+  return ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => IngresarPeli(),
+        ),
+      );
+    },
+    child: Text("Ingresar Pelicula"),
   );
 }
 

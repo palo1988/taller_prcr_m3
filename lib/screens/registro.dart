@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:taller_app/main.dart';
+import 'package:taller_app/screens/inicio.dart';
 
 void main() {
   runApp(Registro());
@@ -25,9 +28,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // Controladores para los campos de texto
-  final TextEditingController _nombreController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +35,15 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: const Text('Registro'),
       ),
-      body: Cuerpo(
-          context, _nombreController, _emailController, _passwordController),
+      body: Cuerpo(context),
     );
   }
 }
 
-Widget Cuerpo(
-    context,
-    TextEditingController nombreController,
-    TextEditingController emailController,
-    TextEditingController passwordController) {
+final TextEditingController _emailController = TextEditingController();
+final TextEditingController _passwordController = TextEditingController();
+
+Widget Cuerpo(context) {
   return Container(
     decoration: BoxDecoration(
       image: DecorationImage(
@@ -60,20 +58,9 @@ Widget Cuerpo(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextField(
-              controller: nombreController,
-              decoration: InputDecoration(
-                labelText: 'Nombre',
-                filled: true,
-                fillColor: Colors.white70,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-            ),
             SizedBox(height: 16),
             TextField(
-              controller: emailController,
+              controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Correo Electrónico',
                 filled: true,
@@ -86,7 +73,7 @@ Widget Cuerpo(
             ),
             SizedBox(height: 16),
             TextField(
-              controller: passwordController,
+              controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Contraseña',
                 filled: true,
@@ -101,17 +88,20 @@ Widget Cuerpo(
             ElevatedButton(
               onPressed: () {
                 // Aquí puedes añadir la lógica para manejar el registro, como enviar los datos a un servidor
+                registro(context);
                 showDialog(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
                       title: Text("Registro Exitoso"),
-                      content: Text(
-                          "Nombre: ${nombreController.text}\nCorreo: ${emailController.text}"),
+                      content: Text("Correo: ${_emailController.text}"),
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Pantalla1()));
                           },
                           child: Text("OK"),
                         ),
@@ -127,4 +117,25 @@ Widget Cuerpo(
       ),
     ),
   );
+}
+
+Future<void> registro(context) async {
+  try {
+    // ignore: unused_local_variable
+    final credential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => TallerApp()));
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'weak-password') {
+      print('The password provided is too weak.');
+    } else if (e.code == 'email-already-in-use') {
+      print('The account already exists for that email.');
+    }
+  } catch (e) {
+    print(e);
+  }
 }
