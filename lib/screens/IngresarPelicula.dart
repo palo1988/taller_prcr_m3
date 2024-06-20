@@ -13,6 +13,7 @@ class IngresarPeli extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Home(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
