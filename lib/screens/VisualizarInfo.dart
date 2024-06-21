@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -59,8 +59,7 @@ class _ListaState extends State<Lista> {
             "precio": value['precio'],
             "categoria": value['categoria'],
             "imagen": value['imagen'],
-            "video": value[
-                'video'], // Asume que tienes la URL del video en los datos
+            "video": value['video'],
           });
         });
       } else if (data is List) {
@@ -71,8 +70,7 @@ class _ListaState extends State<Lista> {
               "precio": value['precio'],
               "categoria": value['categoria'],
               "imagen": value['imagen'],
-              "video": value[
-                  'video'], // Asume que tienes la URL del video en los datos
+              "video": value['video'],
             });
           }
         }
